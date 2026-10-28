@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>凸輪自動機 3D 互動教學模擬器｜STEAM 課堂教具</title>
+    <title>WeClass 凸輪彈跳箱｜3D 機構互動教學模擬器</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Three.js r128 -->
@@ -53,6 +53,13 @@
             box-shadow: 0 6px 15px -3px rgba(0, 91, 102, 0.4);
             transform: translateY(-2px);
         }
+        .mode-btn.active .sub-text {
+            color: #fed7aa;
+        }
+        .mode-btn.active .choice-tag {
+            background-color: #f97316;
+            color: #ffffff;
+        }
         .cam-canvas-container {
             background: radial-gradient(circle at 50% 35%, #fffbf2 0%, #f3e5ab 100%);
         }
@@ -60,16 +67,20 @@
 </head>
 <body class="min-h-screen flex flex-col text-slate-800">
 
-    <!-- 頂部導覽列 (呼應 WeClass PPT 深青色配亮橘色風格) -->
-    <header class="bg-[#004d56] text-white px-4 py-3 shadow-md flex flex-wrap items-center justify-between gap-3 border-b-4 border-orange-500">
+    <!-- 頂部導覽列 (WeClass 品牌露出與深青配亮橘風格) -->
+    <header class="bg-[#004d56] text-white px-4 py-2.5 shadow-md flex flex-wrap items-center justify-between gap-3 border-b-4 border-orange-500">
         <div class="flex items-center gap-3">
-            <div class="bg-orange-500 text-white font-black px-3 py-1.5 rounded-xl text-lg tracking-wider shadow-inner flex items-center gap-2">
-                <span>⚙️</span>
-                <span>凸輪自動機</span>
+            <!-- 左上角品牌露出：WeClass 凸輪彈跳箱 (雙行排版) -->
+            <div class="bg-orange-500 text-white px-3.5 py-1.5 rounded-xl shadow-inner flex items-center gap-2.5 leading-tight">
+                <span class="text-2xl">⚙️</span>
+                <div class="flex flex-col">
+                    <span class="text-[11px] font-extrabold tracking-widest text-orange-100">WeClass</span>
+                    <span class="text-base md:text-lg font-black tracking-wider">凸輪彈跳箱</span>
+                </div>
             </div>
             <div>
                 <h1 class="text-lg md:text-xl font-black tracking-wide">3D 機構互動教學模擬器</h1>
-                <p class="text-xs text-teal-100 hidden sm:block">滑鼠左鍵拖曳可 360° 旋轉視角｜滾輪可縮放｜點選下方按鈕切換凸輪模式</p>
+                <p class="text-xs text-teal-100 hidden sm:block">滑鼠左鍵拖曳可 360° 旋轉視角｜滾輪可縮放｜點選下方按鈕切換機構動作</p>
             </div>
         </div>
 
@@ -86,112 +97,120 @@
     <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 p-3 md:p-4 max-w-[1600px] w-full mx-auto">
 
         <!-- 左側/中央：3D 互動畫布與即時狀態儀表 (佔 8 欄) -->
-        <section class="lg:col-span-8 flex flex-col gap-3">
+        <section class="lg:col-span-8 flex flex-col gap-2.5">
             
-            <!-- 五大凸輪模式快速切換按鈕列 -->
+            <!-- 凸輪動作快速切換按鈕列 (移除模式1/2、偏心第X式等冗餘文字，直觀呈現動作) -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                <button onclick="setCamMode('center_circle')" id="mode-center_circle" class="mode-btn bg-white hover:bg-orange-50 border-2 border-slate-300 rounded-2xl p-2.5 text-left transition flex flex-col justify-between">
+                <!-- 對照組：不動不轉 -->
+                <button onclick="setCamMode('center_circle')" id="mode-center_circle" class="mode-btn bg-slate-50/90 hover:bg-orange-50 border-2 border-dashed border-slate-300 rounded-2xl p-2.5 text-left transition flex flex-col justify-between">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">模式 ①</span>
-                        <span class="text-base">⭕</span>
+                        <span class="font-black text-sm sm:text-base">不動不轉</span>
+                        <span class="text-lg">⭕</span>
                     </div>
-                    <div class="font-black text-sm mt-1">正中心圓輪</div>
-                    <div class="text-[11px] opacity-80">放正下方・不動不轉</div>
+                    <div class="sub-text text-[11px] text-slate-500 mt-1">正軸心輪放正下方（對照）</div>
                 </button>
 
+                <!-- 學生可選機構 1：純旋轉 -->
                 <button onclick="setCamMode('pure_spin')" id="mode-pure_spin" class="mode-btn bg-white hover:bg-orange-50 border-2 border-slate-300 rounded-2xl p-2.5 text-left transition flex flex-col justify-between">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">模式 ②</span>
-                        <span class="text-base">🎠</span>
+                        <span class="font-black text-sm sm:text-base">純旋轉</span>
+                        <span class="text-lg">🎠</span>
                     </div>
-                    <div class="font-black text-sm mt-1">純旋轉</div>
-                    <div class="text-[11px] opacity-80">圓輪放側邊・原地轉圈</div>
+                    <div class="sub-text text-[11px] text-slate-600 mt-1">正軸心輪放邊緣・原地轉</div>
                 </button>
 
+                <!-- 學生可選機構 2：純上下移動 (含 3D 列印擋片) -->
                 <button onclick="setCamMode('mode1_updown')" id="mode-mode1_updown" class="mode-btn active bg-white hover:bg-orange-50 border-2 border-slate-300 rounded-2xl p-2.5 text-left transition flex flex-col justify-between">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">偏心第一式</span>
-                        <span class="text-base">⬆️</span>
+                        <span class="font-black text-sm sm:text-base">純上下移動</span>
+                        <span class="text-lg">⬆️</span>
                     </div>
-                    <div class="font-black text-sm mt-1">純上下移動</div>
-                    <div class="text-[11px] opacity-80">偏心放中間・只跳不轉</div>
+                    <div class="sub-text text-[11px] text-slate-600 mt-1">偏心輪＋擋片・只跳不轉</div>
                 </button>
 
+                <!-- 學生可選機構 3：上下＋旋轉 -->
                 <button onclick="setCamMode('mode2_spin')" id="mode-mode2_spin" class="mode-btn bg-white hover:bg-orange-50 border-2 border-slate-300 rounded-2xl p-2.5 text-left transition flex flex-col justify-between">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">偏心第二式</span>
-                        <span class="text-base">🔄</span>
+                        <span class="font-black text-sm sm:text-base">上下＋旋轉</span>
+                        <span class="text-lg">🔄</span>
                     </div>
-                    <div class="font-black text-sm mt-1">上下＋旋轉</div>
-                    <div class="text-[11px] opacity-80">偏心放側邊・邊跳邊轉</div>
+                    <div class="sub-text text-[11px] text-slate-600 mt-1">偏心輪放邊緣・邊跳邊轉</div>
                 </button>
 
+                <!-- 學生可選機構 4：上下＋左右擺頭 -->
                 <button onclick="setCamMode('mode3_shake')" id="mode-mode3_shake" class="mode-btn col-span-2 sm:col-span-1 bg-white hover:bg-orange-50 border-2 border-slate-300 rounded-2xl p-2.5 text-left transition flex flex-col justify-between">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">偏心第三式</span>
-                        <span class="text-base">↔️</span>
+                        <span class="font-black text-sm sm:text-base">上下＋左右擺頭</span>
+                        <span class="text-lg">↔️</span>
                     </div>
-                    <div class="font-black text-sm mt-1">上下＋左右擺頭</div>
-                    <div class="text-[11px] opacity-80">雙凸輪交替・搖頭晃腦</div>
+                    <div class="sub-text text-[11px] text-slate-600 mt-1">雙偏心輪一左一右交替</div>
                 </button>
             </div>
 
             <!-- 3D 模擬器畫布區 -->
-            <div class="relative flex-1 min-h-[420px] md:min-h-[520px] rounded-3xl shadow-inner border-4 border-[#004d56]/20 overflow-hidden cam-canvas-container" id="canvasWrapper">
+            <div class="relative flex-1 min-h-[430px] md:min-h-[530px] rounded-3xl shadow-inner border-4 border-[#004d56]/20 overflow-hidden cam-canvas-container" id="canvasWrapper">
                 
-                <!-- 左上角：目前模式原理解說浮層 -->
-                <div class="absolute top-3 left-3 z-10 max-w-xs sm:max-w-md bg-white/90 backdrop-blur-md p-3.5 rounded-2xl shadow-lg border border-orange-200 pointer-events-none">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span id="bannerBadge" class="bg-orange-500 text-white text-xs font-black px-2.5 py-0.5 rounded-lg">偏心輪第一式</span>
-                        <h2 id="bannerTitle" class="font-black text-base md:text-lg text-[#004d56]">純上下移動（凸輪放正下方）</h2>
+                <!-- 左上角：縮小版原理解說浮層 (不遮擋中央模擬畫面) -->
+                <div class="absolute top-2.5 left-2.5 z-10 max-w-[215px] sm:max-w-[265px] bg-white/90 backdrop-blur-md p-2.5 rounded-2xl shadow-md border border-orange-200/80 pointer-events-auto">
+                    <div class="flex items-center gap-1.5 mb-1">
+                        <span id="bannerIcon" class="text-base">⬆️</span>
+                        <h2 id="bannerTitle" class="font-black text-xs sm:text-sm text-[#004d56] leading-tight">純上下移動（加裝擋片）</h2>
                     </div>
-                    <p id="bannerDesc" class="text-xs md:text-sm text-slate-700 leading-relaxed">
-                        橘色凸輪正對著頂桿底座的<strong class="text-red-600">正中央</strong>推頂。手轉一圈時，Vic校長只會<strong>上下起伏 1 次</strong>，不會左右轉動。
+                    <p id="bannerDesc" class="text-[11px] sm:text-xs text-slate-700 leading-snug">
+                        現實物理世界中很難避免組裝稍微偏離而導致旋轉，因此需加裝<strong class="text-cyan-700">「3D 列印擋片」</strong>夾住凸輪兩側，以物理性阻擋避免旋轉！
                     </p>
+                    <!-- 純上下移動專屬：拆裝擋片體驗按鈕 -->
+                    <div id="baffleQuickToggleBox" class="mt-2 pt-1.5 border-t border-orange-100">
+                        <button id="btnToggleBaffle" onclick="toggleBaffle()" class="w-full text-[11px] font-black py-1 px-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white shadow-sm transition flex items-center justify-center gap-1">
+                            <span id="baffleBtnIcon">🛡️</span>
+                            <span id="baffleBtnText">已裝擋片（點此測試拆下擋片）</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- 右上角：視角快速切換按鈕 -->
-                <div class="absolute top-3 right-3 z-10 flex flex-col gap-1.5 bg-white/90 backdrop-blur-md p-2 rounded-2xl shadow-md border border-slate-200">
-                    <span class="text-[11px] font-bold text-slate-500 text-center">📷 觀察視角</span>
-                    <button onclick="setCameraView('iso')" class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-teal-700 text-white hover:bg-teal-600 transition">立體全覽</button>
-                    <button onclick="setCameraView('front')" class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-100 text-slate-700 transition">正面平視</button>
-                    <button onclick="setCameraView('top')" class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-100 text-slate-700 transition">俯視看轉向</button>
-                    <button onclick="setCameraView('side')" class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-100 text-slate-700 transition">側面看偏心</button>
+                <div class="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl shadow-md border border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 text-center">📷 觀察視角</span>
+                    <button onclick="setCameraView('iso')" class="text-xs font-bold px-2.5 py-1 rounded-xl bg-teal-700 text-white hover:bg-teal-600 transition">立體全覽</button>
+                    <button onclick="setCameraView('front')" class="text-xs font-bold px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-orange-100 text-slate-700 transition">正面看擋片</button>
+                    <button onclick="setCameraView('top')" class="text-xs font-bold px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-orange-100 text-slate-700 transition">俯視看轉向</button>
+                    <button onclick="setCameraView('side')" class="text-xs font-bold px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-orange-100 text-slate-700 transition">側面看偏心</button>
                 </div>
 
-                <!-- 左下角：2D 凸輪截面同步透視儀 (對應 PPT 圖示) -->
-                <div class="absolute bottom-3 left-3 z-10 bg-white/95 backdrop-blur-md p-2.5 rounded-2xl shadow-lg border-2 border-orange-300 flex items-center gap-3">
-                    <canvas id="cam2dCanvas" width="92" height="92" class="rounded-xl bg-[#fdf3e3] border border-orange-200"></canvas>
-                    <div class="pr-2">
-                        <div class="text-xs font-bold text-slate-500">PPT 凸輪截面同步圖</div>
-                        <div class="text-sm font-black text-slate-800 mt-0.5">手搖柄角度：<span id="angleText" class="text-orange-600 font-mono">0°</span></div>
-                        <div class="text-xs font-bold text-teal-800 mt-1" id="cycleActionHint">⬆️ 推到最高點！</div>
-                        <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-600">
-                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-600"></span>紅點＝轉軸
-                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-orange-500"></span>橘圓＝凸輪
+                <!-- 左下角：2D 凸輪截面與擋片同步透視儀 -->
+                <div class="absolute bottom-2.5 left-2.5 z-10 bg-white/95 backdrop-blur-md p-2 rounded-2xl shadow-lg border-2 border-orange-300 flex items-center gap-2.5">
+                    <canvas id="cam2dCanvas" width="88" height="88" class="rounded-xl bg-[#fdf3e3] border border-orange-200"></canvas>
+                    <div class="pr-1.5">
+                        <div class="text-[11px] font-bold text-slate-500">凸輪截面與擋片同步圖</div>
+                        <div class="text-xs sm:text-sm font-black text-slate-800 mt-0.5">搖柄角度：<span id="angleText" class="text-orange-600 font-mono">0°</span></div>
+                        <div class="text-[11px] font-bold text-teal-800 mt-0.5" id="cycleActionHint">⬆️ 推到最高點！</div>
+                        <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1 text-[10px] text-slate-600">
+                            <span><span class="inline-block w-2 h-2 rounded-full bg-red-600 mr-0.5"></span>軸心</span>
+                            <span><span class="inline-block w-2 h-2 rounded-full bg-orange-500 mr-0.5"></span>凸輪</span>
+                            <span id="legendBaffle" class="text-cyan-700 font-bold"><span class="inline-block w-2 h-2 rounded-sm bg-cyan-500 mr-0.5"></span>擋片</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 右下角：即時數據小儀表 -->
-                <div class="absolute bottom-3 right-3 z-10 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-lg border border-slate-200 w-48 sm:w-56">
-                    <div class="text-xs font-bold text-slate-500 mb-1.5 flex justify-between">
-                        <span>📊 Vic校長動作即時偵測</span>
+                <div class="absolute bottom-2.5 right-2.5 z-10 bg-white/95 backdrop-blur-md p-2.5 rounded-2xl shadow-lg border border-slate-200 w-44 sm:w-52">
+                    <div class="text-[11px] font-bold text-slate-500 mb-1 flex justify-between">
+                        <span>📊 Vic校長動作偵測</span>
                     </div>
                     <!-- 高度條 -->
-                    <div class="mb-2">
-                        <div class="flex justify-between text-xs font-bold mb-0.5">
+                    <div class="mb-1.5">
+                        <div class="flex justify-between text-[11px] font-bold mb-0.5">
                             <span>目前高度</span>
                             <span id="heightValueText" class="text-orange-600">中等</span>
                         </div>
-                        <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
                             <div id="heightBar" class="h-full bg-gradient-to-r from-amber-400 to-orange-600 transition-all duration-75" style="width: 50%;"></div>
                         </div>
                     </div>
                     <!-- 轉向指示 -->
-                    <div class="flex items-center justify-between text-xs font-bold pt-1 border-t border-slate-100">
+                    <div class="flex items-center justify-between text-[11px] font-bold pt-1 border-t border-slate-100">
                         <span>校長面向：</span>
-                        <span id="rotationStatusText" class="px-2 py-0.5 rounded bg-teal-50 text-teal-800 font-black">正前方 (不轉)</span>
+                        <span id="rotationStatusText" class="px-1.5 py-0.5 rounded bg-teal-50 text-teal-800 font-black">正前方 (不轉)</span>
                     </div>
                 </div>
 
@@ -204,8 +223,8 @@
         <aside class="lg:col-span-4 flex flex-col gap-3">
 
             <!-- 控制面板卡片 -->
-            <div class="bg-white rounded-3xl p-4 shadow-md border-2 border-slate-200 flex flex-col gap-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+            <div class="bg-white rounded-3xl p-4 shadow-md border-2 border-slate-200 flex flex-col gap-3.5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                     <h3 class="font-black text-base md:text-lg text-[#004d56] flex items-center gap-2">
                         <span>🎛️</span>
                         <span>老師操作控制台</span>
@@ -246,7 +265,7 @@
                     <p class="text-xs text-slate-600 mb-2">離中心越遠，Vic校長跳得越高！（高低落差變大）</p>
                     <input id="eccSlider" type="range" min="0" max="100" value="65" class="w-full">
                     <div class="flex justify-between text-[11px] font-bold text-slate-500 mt-1">
-                        <span>0% (正中心不跳)</span>
+                        <span>0% (正軸心不跳)</span>
                         <span>50% (微幅跳動)</span>
                         <span>100% (極限大跳躍)</span>
                     </div>
@@ -275,31 +294,31 @@
                 </div>
             </div>
 
-            <!-- 課堂概念小黑板（對應三四年級「週期與動作密碼」） -->
+            <!-- 課堂概念小黑板 -->
             <div class="bg-[#004d56] text-white rounded-3xl p-4 shadow-md flex-1 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-xl">🕵️</span>
-                        <h3 class="font-black text-base md:text-lg text-amber-300">小小工程師觀察重點：手轉 1 圈動幾次？</h3>
+                        <h3 class="font-black text-base md:text-lg text-amber-300">小小工程師觀察重點：機構與動作密碼</h3>
                     </div>
 
                     <!-- 動態更新的觀察表格 -->
                     <div class="bg-white/10 rounded-2xl p-3 space-y-2 text-xs md:text-sm">
                         <div class="flex justify-between items-center border-b border-white/15 pb-1.5">
-                            <span class="text-teal-100">目前輪子配置：</span>
-                            <span id="summaryCamType" class="font-black text-amber-300">單個偏心圓輪（正下方）</span>
+                            <span class="text-teal-100 shrink-0">目前輪子配置：</span>
+                            <span id="summaryCamType" class="font-black text-amber-300 text-right">偏心輪＋3D列印防轉擋片</span>
                         </div>
                         <div class="flex justify-between items-center border-b border-white/15 pb-1.5">
-                            <span class="text-teal-100">手搖桿轉 1 圈 (360°)：</span>
-                            <span id="summaryUpDownCount" class="font-black text-white bg-orange-500 px-2.5 py-0.5 rounded-lg">上下跳動 1 次</span>
+                            <span class="text-teal-100 shrink-0">手搖桿轉 1 圈 (360°)：</span>
+                            <span id="summaryUpDownCount" class="font-black text-white bg-orange-500 px-2.5 py-0.5 rounded-lg text-right">上下跳動 1 次・不旋轉</span>
                         </div>
                         <div class="flex justify-between items-center border-b border-white/15 pb-1.5">
-                            <span class="text-teal-100">摩擦底座接觸位置：</span>
-                            <span id="summaryContactPos" class="font-bold text-white">底座正中央</span>
+                            <span class="text-teal-100 shrink-0">摩擦底座接觸位置：</span>
+                            <span id="summaryContactPos" class="font-bold text-white text-right">底座中央（兩側擋片夾持）</span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-teal-100">為什麼會/不會轉動？</span>
-                            <span id="summarySpinReason" class="font-bold text-emerald-300 text-right">推在正中心，左右平衡不旋轉</span>
+                        <div class="flex justify-between items-start gap-2">
+                            <span class="text-teal-100 shrink-0">為什麼會/不會轉動？</span>
+                            <span id="summarySpinReason" class="font-bold text-emerald-300 text-right leading-snug">現實中微小偏離就會造成旋轉，需靠擋片從兩側物理阻擋限制旋轉</span>
                         </div>
                     </div>
                 </div>
@@ -308,7 +327,7 @@
                 <div class="mt-3 bg-amber-400/20 border border-amber-300/40 rounded-2xl p-3">
                     <div class="text-xs font-black text-amber-300 mb-1">💡 問題思考</div>
                     <p id="teacherPromptText" class="text-xs md:text-sm text-white font-medium leading-relaxed">
-                        仔細盯著左下角的紅點看喔！當凸輪最長的那一邊轉到最上面時，Vic校長在最高點還是最低點？手轉一圈，Vic校長總共跳了幾下？
+                        試著點選左上角的「測試拆下擋片」按鈕看看！為什麼在真實世界中，明明想把偏心輪對準正中間，如果不加裝 3D 列印擋片，上面的角色還是會不小心自己轉動起來呢？
                     </p>
                 </div>
             </div>
@@ -326,6 +345,7 @@
             crankAngle: 0,            // 弧度 (0 ~ 2*PI)
             speed: 1.0,               // 轉速倍率
             eccentricityRatio: 0.65,  // 0 ~ 1 (偏心程度)
+            useBaffle: true,          // 純上下模式下，是否安裝 3D 列印防轉擋片
             showArrow: true,
             showContact: true,
             oneTurnTesting: false,
@@ -338,54 +358,54 @@
 
         const modeConfigs = {
             center_circle: {
-                badge: '模式 ①：前導對照',
-                title: '正中心圓輪（放移動物件正下方）',
-                desc: '當紅色軸心在圓形的<strong class="text-red-600">正中心</strong>，且放在底座<strong class="text-red-600">正下方</strong>時，輪子邊緣到軸心距離都一樣，上面的 Vic校長<strong>不會上下移動，也不會旋轉</strong>。',
-                camType: '正中心圓輪（放正下方）',
+                icon: '⭕',
+                title: '不動不轉（正軸心輪放正下方）',
+                desc: '當紅色軸心在圓形的<strong class="text-red-600">正中心</strong>，輪子邊緣到軸心距離都一樣，沒有高低起伏，因此上面的 Vic校長<strong>不會上下移動，也不會旋轉</strong>。',
+                camType: '正軸心圓輪（放正下方對照）',
                 upDownCount: '上下 0 次・不旋轉',
                 contactPos: '底座正中央（高度固定）',
-                spinReason: '推在正中央且無高低差，不動也不轉',
+                spinReason: '無偏心高低差，作為基礎對照組',
                 prompt: '想一想：為什麼手一直在轉動搖桿，上面的 Vic校長卻像睡著了一樣，既不會上下跳、也不會轉圈圈呢？'
             },
             pure_spin: {
-                badge: '模式 ②：旋轉的秘密',
-                title: '純旋轉（正中心圓輪放側邊）',
-                desc: '同樣是軸心在正中心的圓輪（<strong>沒有偏心</strong>），但把它移到底座<strong class="text-red-600">側邊</strong>！因為沒有偏心所以<strong>不會上下動</strong>，但輪子摩擦底座側邊，會帶動 Vic校長<strong>原地旋轉</strong>！',
-                camType: '正中心圓輪（移到底座側邊）',
+                icon: '🎠',
+                title: '純旋轉（正軸心輪放側邊）',
+                desc: '採用<strong>正軸心輪（無偏心）</strong>，並安裝在靠近從動件底座的<strong class="text-red-600">邊緣位置</strong>。沒有偏心所以不會上下跳，但輪子摩擦底座邊緣會帶動 Vic校長<strong>原地持續旋轉</strong>！',
+                camType: '正軸心輪（靠從動件邊緣位置）',
                 upDownCount: '上下 0 次 ＋ 原地持續旋轉',
                 contactPos: '底座左側邊緣（高度固定）',
-                spinReason: '輪子接觸底座側邊，從旁邊撥動轉盤旋轉！',
-                prompt: '觀察看看：輪子明明沒有偏心，為什麼只是從「中間」移到「側邊」，Vic校長就開始原地轉圈圈，而且不會上下跳動呢？'
+                spinReason: '輪子摩擦底座側邊，像撥轉盤一樣帶動旋轉！',
+                prompt: '觀察看看：輪子明明是正中心的圓輪，為什麼只是安裝在「靠近從動件邊緣的位置」，Vic校長就開始原地轉圈圈了呢？'
             },
             mode1_updown: {
-                badge: '偏心輪第一式',
-                title: '純上下移動（偏心輪放正下方）',
-                desc: '把軸心偏離圓心變成<strong>偏心輪</strong>，並放在底座<strong class="text-red-600">正下方</strong>。手搖桿每轉 1 圈，凸輪最長的一邊就會把 Vic校長推到最高點 1 次（<strong>偏心造成上下移動</strong>）！',
-                camType: '單個偏心輪（放移動物件正下方）',
-                upDownCount: '手轉 1 圈 ＝ 上下起伏 1 次',
-                contactPos: '底座正中央',
-                spinReason: '接觸點在正中心，左右平衡所以只跳不轉',
-                prompt: '仔細看喔！手把轉一圈 (360°)，Vic校長上下跳了幾下？如果把紅點穿得離中心更遠，Vic校長會跳得更高還是更低？'
+                icon: '⬆️',
+                title: '純上下移動（偏心輪＋防轉擋片）',
+                desc: '採用<strong>偏心輪</strong>推動底座上下起伏。但<strong class="text-red-600">現實物理世界中很難避免稍微偏離正中心而導致旋轉</strong>，因此必須在底座加裝<strong class="text-cyan-700">「3D 列印擋片」</strong>夾住凸輪兩側，靠物理性阻擋來避免旋轉！',
+                camType: '單個偏心輪 ＋ 3D列印防轉擋片',
+                upDownCount: '手轉 1 圈 ＝ 上下起伏 1 次（不旋轉）',
+                contactPos: '底座中央 ＋ 兩側擋片物理夾持',
+                spinReason: '現實中稍微偏離就會旋轉，需靠兩側擋片物理阻擋防轉！',
+                prompt: '試著點選畫布左上角的「測試拆下擋片」按鈕看看！為什麼在現實世界中，如果不加裝擋片從兩側擋住，即使盡量對準中間，角色還是會不小心轉動呢？'
             },
             mode2_spin: {
-                badge: '偏心輪第二式',
-                title: '上下移動 ＋ 旋轉（偏心輪放側邊）',
-                desc: '把<strong>偏心輪</strong>移到底座<strong class="text-red-600">側邊</strong>！結合了「偏心（造成上下移動）」與「接觸側邊（帶動旋轉）」兩個特點，讓 Vic校長<strong>邊上下跳、邊轉圈圈</strong>！',
-                camType: '單個偏心輪（放移動物件側邊）',
+                icon: '🔄',
+                title: '上下＋旋轉（偏心輪放從動件邊緣）',
+                desc: '採用<strong>偏心輪</strong>，並安裝在從動件底座<strong class="text-red-600">靠近邊緣的位置</strong>！結合了「偏心（造成上下移動）」與「摩擦邊緣（帶動旋轉）」，讓 Vic校長<strong>邊上下跳、邊轉圈圈</strong>！',
+                camType: '單個偏心輪（放從動件靠近邊緣位置）',
                 upDownCount: '手轉 1 圈 ＝ 上下 1 次 ＋ 單向旋轉',
                 contactPos: '底座左側邊緣（邊推高、邊撥動）',
-                spinReason: '偏心讓它上下動 ＋ 接觸側邊讓它旋轉！',
-                prompt: '比較看看「模式② 純旋轉」和「偏心第二式」：為什麼現在 Vic校長除了自己轉圈圈之外，還多出了上下跳動的動作呢？'
+                spinReason: '偏心造成上下起伏 ＋ 接觸底座邊緣帶動旋轉！',
+                prompt: '比較看看「純上下移動」和「上下＋旋轉」：同樣都是用一顆偏心輪，為什麼拿掉擋片並把凸輪移到從動件邊緣後，Vic校長就能邊跳邊轉呢？'
             },
             mode3_shake: {
-                badge: '偏心輪第三式',
-                title: '上下移動 ＋ 左右旋轉（雙凸輪擺頭）',
-                desc: '在底座左右兩側各放一顆偏心輪，而且兩顆凸輪的突起方向<strong class="text-red-600">相反（相差 180°）</strong>。左輪頂起時往右轉、右輪頂起時往左轉，讓 Vic校長做出搖頭晃腦的動作！',
-                camType: '兩個偏心輪（一左一右、方向相反）',
+                icon: '↔️',
+                title: '上下＋左右擺頭（雙偏心輪一左一右）',
+                desc: '在從動件底座的<strong>左邊及右邊各放一顆偏心輪</strong>，且兩顆凸輪突起方向<strong class="text-red-600">相反（相差 180°）</strong>。左輪頂起時往右轉、右輪頂起時往左轉，做出上下點頭又左右搖擺的動作！',
+                camType: '雙偏心輪（從動件左邊及右邊各一）',
                 upDownCount: '手轉 1 圈 ＝ 上下 2 次 ＋ 左右擺頭各 1 次',
-                contactPos: '左、右兩側邊緣輪流交替接觸',
-                spinReason: '左輪推左邊(右轉)、右輪推右邊(左轉)輪流接力',
-                prompt: '數數看！現在軸上有兩顆方向相反的偏心輪，手把轉一整圈 (360°)，Vic校長總共會上下點頭幾次？身體會怎麼轉動？'
+                contactPos: '底座左、右兩側邊緣輪流交替接觸',
+                spinReason: '左輪推左邊(右轉)、右輪推右邊(左轉)交替接力！',
+                prompt: '數數看！現在軸上一左一右裝了兩顆方向相反的偏心輪，手把轉一整圈 (360°)，Vic校長總共會上下移動幾次？身體會怎麼轉動？'
             }
         };
 
@@ -395,7 +415,7 @@
         const container = document.getElementById('threeContainer');
         const scene = new THREE.Scene();
 
-        const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
+        const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
@@ -405,7 +425,7 @@
         container.appendChild(renderer.domElement);
 
         // 燈光設定
-        const ambientLight = new THREE.AmbientLight(0xfffbf0, 0.8);
+        const ambientLight = new THREE.AmbientLight(0xfffbf0, 0.82);
         scene.add(ambientLight);
 
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
@@ -419,15 +439,15 @@
         fillLight.position.set(-8, 5, -8);
         scene.add(fillLight);
 
-        // 滑鼠/觸控軌道旋轉控制
+        // 滑鼠/觸控軌道旋轉控制 (微調預設視角與距離，避免左上角說明框遮擋)
         let isPointerDown = false;
         let prevPointer = { x: 0, y: 0 };
-        let spherical = { theta: 0.58, phi: 1.15, radius: 16.5 };
-        let targetLookAt = new THREE.Vector3(0, 1.35, 0);
+        let spherical = { theta: 0.52, phi: 1.16, radius: 17.6 };
+        let targetLookAt = new THREE.Vector3(-0.25, 1.35, 0);
 
         function updateCameraPosition() {
             spherical.phi = Math.max(0.2, Math.min(Math.PI / 2 - 0.02, spherical.phi));
-            spherical.radius = Math.max(9, Math.min(26, spherical.radius));
+            spherical.radius = Math.max(9.5, Math.min(26, spherical.radius));
             camera.position.x = targetLookAt.x + spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
             camera.position.y = targetLookAt.y + spherical.radius * Math.cos(spherical.phi);
             camera.position.z = targetLookAt.z + spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
@@ -459,25 +479,25 @@
 
         function setCameraView(preset) {
             if (preset === 'iso') {
-                spherical.theta = 0.58; spherical.phi = 1.15; spherical.radius = 16.5;
+                spherical.theta = 0.52; spherical.phi = 1.16; spherical.radius = 17.6;
             } else if (preset === 'front') {
-                spherical.theta = 0; spherical.phi = 1.38; spherical.radius = 15.8;
+                spherical.theta = 0; spherical.phi = 1.38; spherical.radius = 16.8;
             } else if (preset === 'top') {
-                spherical.theta = 0; spherical.phi = 0.35; spherical.radius = 17.5;
+                spherical.theta = 0; spherical.phi = 0.35; spherical.radius = 18.2;
             } else if (preset === 'side') {
-                spherical.theta = Math.PI / 2; spherical.phi = 1.35; spherical.radius = 16.2;
+                spherical.theta = Math.PI / 2; spherical.phi = 1.35; spherical.radius = 16.8;
             }
             updateCameraPosition();
         }
 
         // ==========================================
-        // 3. 建立 3D 凸輪自動機機構模型 (加大木盒防穿模)
+        // 3. 建立 3D 凸輪彈跳箱機構模型
         // ==========================================
         const woodLightMat = new THREE.MeshStandardMaterial({ color: 0xe6c290, roughness: 0.65 });
         const woodDarkEdgeMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.8 });
         const woodShaftMat = new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.6 });
 
-        // --- 3.1 加大後的木盒外框 (確保 100% 偏心輪朝下時絕不穿出底板) ---
+        // --- 3.1 木盒外框 ---
         const boxGroup = new THREE.Group();
         scene.add(boxGroup);
 
@@ -496,8 +516,6 @@
             return g;
         }
 
-        // 轉軸在 y = -0.65，最大向下半徑 = 1.45 + 0.75 = 2.20 -> 凸輪最低點在 y = -2.85
-        // 底板設在 y = -3.35 (頂面為 -3.21)，留有充裕安全空間，完全不穿模！
         boxGroup.add(createLaserCutBoard(7.0, 0.28, 3.8, 0, -3.35, 0)); // 底板
         boxGroup.add(createLaserCutBoard(7.0, 0.28, 3.8, 0, 2.45, 0));  // 頂板
         boxGroup.add(createLaserCutBoard(0.28, 6.08, 3.4, -3.15, -0.45, 0)); // 左側板
@@ -555,7 +573,7 @@
         handleKnob.position.set(-0.45, 1.0, 0);
         handWheelGroup.add(handleKnob);
 
-        // --- 3.3 橘色凸輪組 (呼應 PPT 橘色圓形 + 紅色偏心軸) ---
+        // --- 3.3 橘色凸輪組 ---
         function createPPTEccentricCam() {
             const camWrapper = new THREE.Group();
 
@@ -609,7 +627,7 @@
         crankGroup.add(cam1.camWrapper);
         crankGroup.add(cam2.camWrapper);
 
-        // --- 3.4 頂部從動件：摩擦圓錐底座 + 藍白吸管軸 + 吉祥物 Vic校長 ---
+        // --- 3.4 頂部從動件：摩擦圓錐底座 + 3D列印防轉擋片 + 藍白吸管軸 + 吉祥物 Vic校長 ---
         const followerGroup = new THREE.Group();
         scene.add(followerGroup);
 
@@ -639,6 +657,39 @@
         followerConeMesh.position.y = coneHeight / 2;
         followerConeMesh.castShadow = true;
         followerGroup.add(followerConeMesh);
+
+        // --- 新增：3D 列印防轉擋片組 (呼應簡報右上角「上下：採用偏心輪、要做擋片」) ---
+        // 由底座下方延伸出兩片垂直長方形擋板，一左一右夾住中央偏心輪，限制水平旋轉且不碰撞木軸
+        const baffleGroup = new THREE.Group();
+        followerGroup.add(baffleGroup);
+
+        const bafflePrintMat = new THREE.MeshStandardMaterial({
+            color: 0x06b6d4, // 亮青藍色 3D 列印件，對應簡報圖示顏色
+            roughness: 0.35,
+            metalness: 0.05
+        });
+        const baffleEdgeMat = new THREE.LineBasicMaterial({ color: 0x0e7490, linewidth: 2 });
+
+        // 頂部連接圓盤墊片
+        const baffleTopPlateGeo = new THREE.BoxGeometry(0.76, 0.08, 1.75);
+        const baffleTopPlate = new THREE.Mesh(baffleTopPlateGeo, bafflePrintMat);
+        baffleTopPlate.position.set(0, -0.02, 0);
+        baffleGroup.add(baffleTopPlate);
+        baffleGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(baffleTopPlateGeo), baffleEdgeMat));
+
+        // 左右兩片垂直防轉擋板 (夾在凸輪 x = ±0.14 兩側外緣 x = ±0.24 處，高度 0.48 絕不碰到木軸)
+        const plateHeight = 0.48;
+        const plateGeo = new THREE.BoxGeometry(0.11, plateHeight, 1.75);
+        for (let side of [-1, 1]) {
+            const plateMesh = new THREE.Mesh(plateGeo, bafflePrintMat);
+            plateMesh.position.set(side * 0.24, -plateHeight / 2 - 0.02, 0);
+            plateMesh.castShadow = true;
+            baffleGroup.add(plateMesh);
+
+            const plateEdges = new THREE.LineSegments(new THREE.EdgesGeometry(plateGeo), baffleEdgeMat);
+            plateEdges.position.copy(plateMesh.position);
+            baffleGroup.add(plateEdges);
+        }
 
         // 藍白相間垂直吸管頂桿
         const strawShaftGroup = new THREE.Group();
@@ -671,7 +722,7 @@
         blueCup.position.y = coneHeight + shaftLength;
         followerGroup.add(blueCup);
 
-        // --- 3.5 公司吉祥物「Vic校長」3D 立體模型 (還原正反面形象圖) ---
+        // --- 3.5 公司吉祥物「Vic校長」3D 立體模型 ---
         const vicGroup = new THREE.Group();
         vicGroup.position.y = coneHeight + shaftLength + 0.95;
         followerGroup.add(vicGroup);
@@ -680,18 +731,13 @@
         const vicDarkTealMat = new THREE.MeshStandardMaterial({ color: 0x134857, roughness: 0.4 });
         const vicWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
 
-        // (A) Vic校長主身體 (微凹頂部 + 寬圓下擺 + 底部微凹曲線)
+        // (A) Vic校長主身體
         const bodyShape = new THREE.Shape();
         bodyShape.moveTo(-0.82, 0.85);
-        // 頂部微凹曲線
         bodyShape.quadraticCurveTo(0, 0.72, 0.82, 0.85);
-        // 右側往外圓潤展開至下半身
         bodyShape.bezierCurveTo(1.12, 0.25, 1.25, -0.35, 0.95, -0.72);
-        // 右下圓角至底部中央微凹處
         bodyShape.bezierCurveTo(0.68, -0.92, 0.22, -0.88, 0, -0.78);
-        // 底部中央微凹處至左下圓角
         bodyShape.bezierCurveTo(-0.22, -0.88, -0.68, -0.92, -0.95, -0.72);
-        // 左側往上收合回左上角
         bodyShape.bezierCurveTo(-1.25, -0.35, -1.12, 0.25, -0.82, 0.85);
 
         const bodyExtrudeSettings = {
@@ -708,7 +754,7 @@
         vicBodyMesh.castShadow = true;
         vicGroup.add(vicBodyMesh);
 
-        // (B) 左右彎曲手臂與可愛握拳小手 (正反面皆可見)
+        // (B) 左右彎曲手臂與可愛握拳小手
         for (let side of [-1, 1]) {
             const armCurve = new THREE.QuadraticBezierCurve3(
                 new THREE.Vector3(side * 0.92, 0.25, 0),
@@ -720,20 +766,17 @@
             armMesh.castShadow = true;
             vicGroup.add(armMesh);
 
-            // 拳頭手掌
             const handSphere = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), vicOrangeMat);
             handSphere.position.set(side * 1.30, -0.66, 0);
             vicGroup.add(handSphere);
 
-            // 拇指球讓握拳造型更生動
             const thumbSphere = new THREE.Mesh(new THREE.SphereGeometry(0.10, 12, 12), vicOrangeMat);
             thumbSphere.position.set(side * 1.18, -0.63, 0.08);
             vicGroup.add(thumbSphere);
         }
 
-        // (C) 短腿與深青色向外微張短靴 (正反面皆可見)
+        // (C) 短腿與深青色向外微張短靴
         for (let side of [-1, 1]) {
-            // 橘色短腿
             const legMesh = new THREE.Mesh(
                 new THREE.CylinderGeometry(0.12, 0.12, 0.28, 16),
                 vicOrangeMat
@@ -741,11 +784,9 @@
             legMesh.position.set(side * 0.36, -0.88, 0);
             vicGroup.add(legMesh);
 
-            // 深青色短靴群組
             const bootGroup = new THREE.Group();
             bootGroup.position.set(side * 0.36, -1.08, 0);
 
-            // 靴筒
             const bootCuff = new THREE.Mesh(
                 new THREE.BoxGeometry(0.32, 0.22, 0.30),
                 vicDarkTealMat
@@ -753,7 +794,6 @@
             bootCuff.position.set(0, 0.04, 0);
             bootGroup.add(bootCuff);
 
-            // 向外微張的圓頭靴尖
             const bootToe = new THREE.Mesh(
                 new THREE.SphereGeometry(0.19, 16, 16),
                 vicDarkTealMat
@@ -765,12 +805,9 @@
             vicGroup.add(bootGroup);
         }
 
-        // (D) 正面五官 (+Z 方向：大白眼、深青眼珠、彎眉、標誌性 W 型八字大鬍子)
-        // 背面 (-Z 方向) 保持純橘色無五官，讓學生一眼分辨正反面！
+        // (D) 正面五官 (+Z 方向)
         const frontZ = 0.23;
-
         for (let side of [-1, 1]) {
-            // 白色大橢圓眼眶
             const whiteEye = new THREE.Mesh(
                 new THREE.CylinderGeometry(0.27, 0.27, 0.06, 24),
                 vicWhiteMat
@@ -780,7 +817,6 @@
             whiteEye.position.set(side * 0.25, 0.52, frontZ);
             vicGroup.add(whiteEye);
 
-            // 深青色大眼珠 (微向中間靠攏，呈現可愛對焦神情)
             const pupil = new THREE.Mesh(
                 new THREE.CylinderGeometry(0.16, 0.16, 0.07, 20),
                 vicDarkTealMat
@@ -790,7 +826,6 @@
             pupil.position.set(side * 0.22, 0.50, frontZ + 0.015);
             vicGroup.add(pupil);
 
-            // 頭頂上方的深青色彎眉
             const browCurve = new THREE.QuadraticBezierCurve3(
                 new THREE.Vector3(side * 0.10, 0.90, frontZ),
                 new THREE.Vector3(side * 0.26, 0.98, frontZ),
@@ -801,7 +836,7 @@
             vicGroup.add(browMesh);
         }
 
-        // 深青色豐滿八字鬍 (位於大眼睛正下方)
+        // 深青色豐滿八字鬍
         const mustacheShape = new THREE.Shape();
         mustacheShape.moveTo(0, 0.26);
         mustacheShape.bezierCurveTo(0.22, 0.34, 0.48, 0.18, 0.44, -0.02);
@@ -821,7 +856,7 @@
         mustacheMesh.position.set(0, 0.08, frontZ - 0.01);
         vicGroup.add(mustacheMesh);
 
-        // --- 3.6 Vic校長頭頂 3D 方向大箭頭 (幫助全班看清楚面向哪裡) ---
+        // --- 3.6 Vic校長頭頂 3D 方向大箭頭 ---
         const directionArrowGroup = new THREE.Group();
         directionArrowGroup.position.set(0, 1.38, 0);
         vicGroup.add(directionArrowGroup);
@@ -834,7 +869,7 @@
         arrowHead.position.set(0, 0, 0.75);
         directionArrowGroup.add(arrowShaft, arrowHead);
 
-        // --- 3.7 摩擦接觸點發光球 (顯示輪子頂在底座哪個位置) ---
+        // --- 3.7 摩擦接觸點發光球 ---
         const contactGlowGroup = new THREE.Group();
         scene.add(contactGlowGroup);
 
@@ -853,11 +888,55 @@
         // ==========================================
         // 4. 物理與機構運動計算核心
         // ==========================================
-        const sideOffsetX = 0.85; // 凸輪放在側邊時的 X 偏移距離
+        const sideOffsetX = 0.85;       // 凸輪放在側邊時的 X 偏移距離
+        const realWorldErrorX = -0.22;  // 模擬現實世界中未裝擋片時難以避免的微小偏離
+
+        function toggleBaffle() {
+            state.useBaffle = !state.useBaffle;
+            updateBaffleUI();
+            updateMechanism(0);
+        }
+
+        function updateBaffleUI() {
+            const btn = document.getElementById('btnToggleBaffle');
+            const icon = document.getElementById('baffleBtnIcon');
+            const text = document.getElementById('baffleBtnText');
+            const legendBaffle = document.getElementById('legendBaffle');
+
+            if (state.mode === 'mode1_updown') {
+                document.getElementById('baffleQuickToggleBox').classList.remove('hidden');
+                legendBaffle.classList.remove('hidden');
+                if (state.useBaffle) {
+                    btn.className = 'w-full text-[11px] font-black py-1 px-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white shadow-sm transition flex items-center justify-center gap-1';
+                    icon.textContent = '🛡️';
+                    text.textContent = '已裝 3D 列印擋片（點此拆下測試）';
+                    document.getElementById('summaryCamType').textContent = '單個偏心輪 ＋ 3D列印防轉擋片';
+                    document.getElementById('summaryUpDownCount').textContent = '手轉 1 圈 ＝ 上下起伏 1 次（不旋轉）';
+                    document.getElementById('summaryContactPos').textContent = '底座中央 ＋ 兩側擋片物理夾持';
+                    document.getElementById('summarySpinReason').textContent = '現實中稍微偏離就會旋轉，需靠兩側擋片物理阻擋防轉！';
+                    document.getElementById('summarySpinReason').className = 'font-bold text-emerald-300 text-right leading-snug';
+                } else {
+                    btn.className = 'w-full text-[11px] font-black py-1 px-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition flex items-center justify-center gap-1 animate-pulse';
+                    icon.textContent = '⚠️';
+                    text.textContent = '未裝擋片：微小偏離導致旋轉（點此裝回）';
+                    document.getElementById('summaryCamType').textContent = '單個偏心輪（未裝擋片・現實微小偏離）';
+                    document.getElementById('summaryUpDownCount').textContent = '上下起伏 1 次 ＋ 因微小偏離而歪斜旋轉';
+                    document.getElementById('summaryContactPos').textContent = '稍微偏離正中心（無擋片阻擋）';
+                    document.getElementById('summarySpinReason').textContent = '未加裝擋片！現實中只要稍微偏離正中心，摩擦力就會帶動它旋轉';
+                    document.getElementById('summarySpinReason').className = 'font-bold text-amber-300 text-right leading-snug';
+                }
+            } else {
+                document.getElementById('baffleQuickToggleBox').classList.add('hidden');
+                legendBaffle.classList.add('hidden');
+            }
+        }
 
         function updateMechanism(dt) {
             const isConcentric = (state.mode === 'center_circle' || state.mode === 'pure_spin');
             const ecc = isConcentric ? 0 : state.eccentricityRatio * maxEccentricity;
+
+            // 控制 3D 列印防轉擋片的顯示與否
+            baffleGroup.visible = (state.mode === 'mode1_updown' && state.useBaffle);
 
             // 設定凸輪 1 與凸輪 2 的偏心位置與軸向位置
             if (state.mode === 'center_circle') {
@@ -868,12 +947,13 @@
             } else if (state.mode === 'pure_spin') {
                 cam1.camWrapper.visible = true;
                 cam2.camWrapper.visible = false;
-                cam1.camWrapper.position.x = -sideOffsetX; // 正中心圓輪放在側邊
+                cam1.camWrapper.position.x = -sideOffsetX; // 正軸心輪放在側邊
                 cam1.orangeDiskGroup.position.set(0, 0, 0);
             } else if (state.mode === 'mode1_updown') {
                 cam1.camWrapper.visible = true;
                 cam2.camWrapper.visible = false;
-                cam1.camWrapper.position.x = 0;
+                // 若拆下擋片，模擬現實中難以避免的微小組裝偏離 (realWorldErrorX)
+                cam1.camWrapper.position.x = state.useBaffle ? 0 : realWorldErrorX;
                 cam1.orangeDiskGroup.position.set(0, ecc, 0);
             } else if (state.mode === 'mode2_spin') {
                 cam1.camWrapper.visible = true;
@@ -912,8 +992,14 @@
                 state.followerSpinAngle = state.crankAngle * 1.0;
             } else if (state.mode === 'mode1_updown') {
                 currentLift = lift1;
-                activeContactX = 0;
-                state.followerSpinAngle = 0;
+                if (state.useBaffle) {
+                    activeContactX = 0;
+                    state.followerSpinAngle = 0; // 3D 列印擋片物理阻擋，完全不旋轉
+                } else {
+                    activeContactX = realWorldErrorX;
+                    // 未裝擋片時，因微小偏離產生摩擦力矩，導致角色邊跳邊慢速歪斜旋轉
+                    state.followerSpinAngle = state.crankAngle * 0.45;
+                }
             } else if (state.mode === 'mode2_spin') {
                 currentLift = lift1;
                 activeContactX = -sideOffsetX;
@@ -940,24 +1026,24 @@
             glowRing.rotation.z += 0.05;
 
             // 更新 2D 透視圖與 UI 儀表
-            draw2DCamDiagram(ecc, cosA, sinA);
+            draw2DCamDiagram(ecc, cosA, sinA, currentLift);
             updateTelemetryUI(ecc, currentLift);
         }
 
         // ==========================================
-        // 5. 左下角 2D PPT 凸輪截面同步繪製
+        // 5. 左下角 2D 凸輪截面與擋片同步繪製
         // ==========================================
         const canvas2d = document.getElementById('cam2dCanvas');
         const ctx2d = canvas2d.getContext('2d');
 
-        function draw2DCamDiagram(ecc, cosA, sinA) {
+        function draw2DCamDiagram(ecc, cosA, sinA, currentLift) {
             const w = canvas2d.width;
             const h = canvas2d.height;
             ctx2d.clearRect(0, 0, w, h);
 
             const cx = w / 2;
-            const cy = h / 2 + 10;
-            const scale = 18;
+            const cy = h / 2 + 12;
+            const scale = 16.5;
             const rPx = camRadius * scale;
             const eccPx = ecc * scale;
 
@@ -966,7 +1052,7 @@
                 const cam2X = cx - eccPx * sinA;
                 const cam2Y = cy + eccPx * cosA;
                 ctx2d.save();
-                ctx2d.globalAlpha = 0.4;
+                ctx2d.globalAlpha = 0.38;
                 ctx2d.beginPath();
                 ctx2d.arc(cam2X, cam2Y, rPx, 0, Math.PI * 2);
                 ctx2d.fillStyle = '#fb923c';
@@ -977,7 +1063,7 @@
                 ctx2d.restore();
             }
 
-            // 主凸輪圓心座標 (注意 Canvas Y 軸向下為正)
+            // 主凸輪圓心座標
             const diskCenterX = cx + eccPx * sinA;
             const diskCenterY = cy - eccPx * cosA;
 
@@ -997,17 +1083,33 @@
             ctx2d.moveTo(cx, cy);
             ctx2d.lineTo(farX, farY);
             ctx2d.strokeStyle = '#fef08a';
-            ctx2d.lineWidth = 2.5;
+            ctx2d.lineWidth = 2.2;
             ctx2d.stroke();
 
             // 畫紅色固定轉軸點
             ctx2d.beginPath();
-            ctx2d.arc(cx, cy, 5.5, 0, Math.PI * 2);
+            ctx2d.arc(cx, cy, 5, 0, Math.PI * 2);
             ctx2d.fillStyle = '#ef4444';
             ctx2d.fill();
             ctx2d.lineWidth = 1.5;
             ctx2d.strokeStyle = '#7f1d1d';
             ctx2d.stroke();
+
+            // 畫頂部從動件橫桿與「純上下移動」的 3D 列印擋片示意 (對應簡報圖示)
+            const topContactY = cy - currentLift * scale;
+            ctx2d.save();
+            // 從動件水平底板線
+            ctx2d.fillStyle = '#78350f';
+            ctx2d.fillRect(cx - 26, topContactY - 4, 52, 4);
+
+            // 若在純上下模式且裝有擋片，繪出青藍色夾持擋片截面
+            if (state.mode === 'mode1_updown' && state.useBaffle) {
+                ctx2d.fillStyle = '#06b6d4';
+                ctx2d.fillRect(cx - 20, topContactY - 3, 40, 3.5); // 橫樑
+                ctx2d.fillRect(cx - 16, topContactY, 4.5, 14);     // 左擋片
+                ctx2d.fillRect(cx + 11.5, topContactY, 4.5, 14);   // 右擋片
+            }
+            ctx2d.restore();
         }
 
         // ==========================================
@@ -1033,10 +1135,10 @@
 
             if (state.mode === 'center_circle') {
                 heightLabel.textContent = '固定不變';
-                hintLabel.textContent = '⭕ 正中心圓輪：不跳也不轉';
+                hintLabel.textContent = '⭕ 正軸心輪：不跳也不轉';
             } else if (state.mode === 'pure_spin') {
                 heightLabel.textContent = '固定不變 (不跳)';
-                hintLabel.textContent = '🎠 圓輪放側邊：原地純旋轉';
+                hintLabel.textContent = '🎠 正軸心輪放側邊：純旋轉';
             } else if (ecc < 0.02) {
                 heightLabel.textContent = '固定不變';
                 hintLabel.textContent = '⭕ 偏心為 0，無高低變化';
@@ -1053,35 +1155,48 @@
 
             // 旋轉狀態顯示
             const rotText = document.getElementById('rotationStatusText');
-            if (state.mode === 'center_circle' || state.mode === 'mode1_updown') {
-                rotText.textContent = '正面朝前 (不旋轉)';
-                rotText.className = 'px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-black';
+            if (state.mode === 'center_circle') {
+                rotText.textContent = '正前方 (不旋轉)';
+                rotText.className = 'px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-black';
+            } else if (state.mode === 'mode1_updown') {
+                if (state.useBaffle) {
+                    rotText.textContent = '🛡️ 擋片鎖定 (不旋轉)';
+                    rotText.className = 'px-1.5 py-0.5 rounded bg-cyan-100 text-cyan-800 font-black';
+                } else {
+                    const spinDeg = Math.round(((state.followerSpinAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) * (180 / Math.PI)) % 360;
+                    rotText.textContent = `⚠️ 偏離自轉 (${spinDeg}°)`;
+                    rotText.className = 'px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 font-black';
+                }
             } else if (state.mode === 'pure_spin' || state.mode === 'mode2_spin') {
                 const spinDeg = Math.round(((state.followerSpinAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) * (180 / Math.PI)) % 360;
                 const isFacingFront = (spinDeg < 90 || spinDeg > 270);
-                rotText.textContent = `${isFacingFront ? '正面' : '背面'}・單向旋轉 (${spinDeg}°)`;
-                rotText.className = 'px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-black';
+                rotText.textContent = `${isFacingFront ? '正面' : '背面'}・旋轉 (${spinDeg}°)`;
+                rotText.className = 'px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-black';
             } else if (state.mode === 'mode3_shake') {
                 if (Math.sin(state.crankAngle) > 0.15) {
-                    rotText.textContent = '👉 向右轉頭 (左輪推)';
-                    rotText.className = 'px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-black';
+                    rotText.textContent = '👉 向右轉 (左輪推)';
+                    rotText.className = 'px-1.5 py-0.5 rounded bg-orange-100 text-orange-800 font-black';
                 } else if (Math.sin(state.crankAngle) < -0.15) {
-                    rotText.textContent = '👈 向左轉頭 (右輪推)';
-                    rotText.className = 'px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-black';
+                    rotText.textContent = '👈 向左轉 (右輪推)';
+                    rotText.className = 'px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-black';
                 } else {
                     rotText.textContent = '⬆️ 經過正前方';
-                    rotText.className = 'px-2 py-0.5 rounded bg-teal-100 text-teal-800 font-black';
+                    rotText.className = 'px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 font-black';
                 }
             }
         }
 
         function setCamMode(modeKey) {
             state.mode = modeKey;
+            if (modeKey === 'mode1_updown') {
+                state.useBaffle = true; // 切換回純上下移動時，預設裝上 3D 列印擋片
+            }
+
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`mode-${modeKey}`).classList.add('active');
 
             const cfg = modeConfigs[modeKey];
-            document.getElementById('bannerBadge').textContent = cfg.badge;
+            document.getElementById('bannerIcon').textContent = cfg.icon;
             document.getElementById('bannerTitle').textContent = cfg.title;
             document.getElementById('bannerDesc').innerHTML = cfg.desc;
 
@@ -1089,10 +1204,13 @@
             document.getElementById('summaryUpDownCount').textContent = cfg.upDownCount;
             document.getElementById('summaryContactPos').textContent = cfg.contactPos;
             document.getElementById('summarySpinReason').textContent = cfg.spinReason;
+            document.getElementById('summarySpinReason').className = 'font-bold text-emerald-300 text-right leading-snug';
             document.getElementById('teacherPromptText').textContent = cfg.prompt;
 
+            updateBaffleUI();
+
             if (modeKey === 'center_circle' || modeKey === 'pure_spin') {
-                document.getElementById('eccValueBadge').textContent = '0% (正中心圓輪)';
+                document.getElementById('eccValueBadge').textContent = '0% (正軸心圓輪)';
             } else {
                 if (state.eccentricityRatio < 0.15) {
                     state.eccentricityRatio = 0.65;
@@ -1129,7 +1247,7 @@
             const val = parseFloat(e.target.value);
             state.eccentricityRatio = val / 100;
             if (val === 0) {
-                document.getElementById('eccValueBadge').textContent = '0% (正中心)';
+                document.getElementById('eccValueBadge').textContent = '0% (正軸心)';
             } else if (val < 40) {
                 document.getElementById('eccValueBadge').textContent = `微幅偏心 (${val}%)`;
             } else if (val < 75) {
@@ -1137,7 +1255,7 @@
             } else {
                 document.getElementById('eccValueBadge').textContent = `極限大偏心 (${val}%)`;
             }
-            // 若在正中心圓輪模式下主動拉動偏心滑桿，自動切到對應的偏心模式
+            // 若在正軸心圓輪模式下主動拉動偏心滑桿，自動切到對應的偏心模式
             if (val > 5) {
                 if (state.mode === 'center_circle') setCamMode('mode1_updown');
                 else if (state.mode === 'pure_spin') setCamMode('mode2_spin');
